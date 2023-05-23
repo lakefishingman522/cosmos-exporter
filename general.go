@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"math/big"
 	"net/http"
 	"strconv"
 	"sync"
@@ -104,9 +105,15 @@ func GeneralHandler(w http.ResponseWriter, r *http.Request, grpcConn *grpc.Clien
 		sublogger.Debug().
 			Float64("request-time", time.Since(queryStart).Seconds()).
 			Msg("Finished querying staking pool")
+		bondedTokensBigInt := response.Pool.BondedTokens.BigInt()
+		bondedTokens, _ := new(big.Float).SetInt(bondedTokensBigInt).Float64()
 
-		generalBondedTokensGauge.Set(float64(response.Pool.BondedTokens.Int64()))
-		generalNotBondedTokensGauge.Set(float64(response.Pool.NotBondedTokens.Int64()))
+		notBondedTokensBigInt := response.Pool.NotBondedTokens.BigInt()
+		notBondedTokens, _ := new(big.Float).SetInt(notBondedTokensBigInt).Float64()
+
+		generalBondedTokensGauge.Set(bondedTokens)
+		generalNotBondedTokensGauge.Set(notBondedTokens)
+
 	}()
 
 	wg.Add(1)

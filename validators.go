@@ -153,7 +153,11 @@ func ValidatorsHandler(w http.ResponseWriter, r *http.Request, grpcConn *grpc.Cl
 
 		// sorting by delegator shares to display rankings
 		sort.Slice(validators, func(i, j int) bool {
-			return validators[i].DelegatorShares.GT(validators[j].DelegatorShares)
+			if validators[i].DelegatorShares.BigInt().Cmp(validators[j].DelegatorShares.BigInt()) > 0 {
+				return true
+			} else {
+				return false
+			}
 		})
 	}()
 
