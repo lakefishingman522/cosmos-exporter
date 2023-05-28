@@ -231,13 +231,13 @@ func ValidatorsHandler(w http.ResponseWriter, r *http.Request, grpcConn *grpc.Cl
 		} else {
 			validatorsCommissionGauge.With(prometheus.Labels{
 				"address": validator.OperatorAddress,
-				"moniker": validator.Description.Moniker,
+				"moniker": string(validator.Description.Moniker),
 			}).Set(rate)
 		}
 
 		validatorsStatusGauge.With(prometheus.Labels{
 			"address": validator.OperatorAddress,
-			"moniker": validator.Description.Moniker,
+			"moniker": string(validator.Description.Moniker),
 		}).Set(float64(validator.Status))
 
 		// golang doesn't have a ternary operator, so we have to stick with this ugly solution
@@ -250,7 +250,7 @@ func ValidatorsHandler(w http.ResponseWriter, r *http.Request, grpcConn *grpc.Cl
 		}
 		validatorsJailedGauge.With(prometheus.Labels{
 			"address": validator.OperatorAddress,
-			"moniker": validator.Description.Moniker,
+			"moniker": string(validator.Description.Moniker),
 		}).Set(jailed)
 
 		// because cosmos's dec doesn't have .toFloat64() method or whatever and returns everything as int
@@ -262,7 +262,7 @@ func ValidatorsHandler(w http.ResponseWriter, r *http.Request, grpcConn *grpc.Cl
 		} else {
 			validatorsTokensGauge.With(prometheus.Labels{
 				"address": validator.OperatorAddress,
-				"moniker": validator.Description.Moniker,
+				"moniker": string(validator.Description.Moniker),
 				"denom":   Denom,
 			}).Set(value / DenomCoefficient) // a better way to do this is using math/big Div then checking IsInt64
 		}
@@ -276,7 +276,7 @@ func ValidatorsHandler(w http.ResponseWriter, r *http.Request, grpcConn *grpc.Cl
 		} else {
 			validatorsDelegatorSharesGauge.With(prometheus.Labels{
 				"address": validator.OperatorAddress,
-				"moniker": validator.Description.Moniker,
+				"moniker": string(validator.Description.Moniker),
 				"denom":   Denom,
 			}).Set(value / DenomCoefficient)
 		}
@@ -290,7 +290,7 @@ func ValidatorsHandler(w http.ResponseWriter, r *http.Request, grpcConn *grpc.Cl
 		} else {
 			validatorsMinSelfDelegationGauge.With(prometheus.Labels{
 				"address": validator.OperatorAddress,
-				"moniker": validator.Description.Moniker,
+				"moniker": string(validator.Description.Moniker),
 				"denom":   Denom,
 			}).Set(value / DenomCoefficient)
 		}
@@ -332,7 +332,7 @@ func ValidatorsHandler(w http.ResponseWriter, r *http.Request, grpcConn *grpc.Cl
 		if validator.Status == stakingtypes.Bonded {
 			validatorsMissedBlocksGauge.With(prometheus.Labels{
 				"address": validator.OperatorAddress,
-				"moniker": validator.Description.Moniker,
+				"moniker": string(validator.Description.Moniker),
 			}).Set(float64(signingInfo.MissedBlocksCounter))
 		} else {
 			sublogger.Trace().
@@ -342,7 +342,7 @@ func ValidatorsHandler(w http.ResponseWriter, r *http.Request, grpcConn *grpc.Cl
 
 		validatorsRankGauge.With(prometheus.Labels{
 			"address": validator.OperatorAddress,
-			"moniker": validator.Description.Moniker,
+			"moniker": string(validator.Description.Moniker),
 		}).Set(float64(index + 1))
 
 		if validatorSetLength != 0 {
@@ -357,7 +357,7 @@ func ValidatorsHandler(w http.ResponseWriter, r *http.Request, grpcConn *grpc.Cl
 
 			validatorsIsActiveGauge.With(prometheus.Labels{
 				"address": validator.OperatorAddress,
-				"moniker": validator.Description.Moniker,
+				"moniker": string(validator.Description.Moniker),
 			}).Set(active)
 		}
 	}
